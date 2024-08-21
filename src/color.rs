@@ -1,4 +1,5 @@
 use std::ops::{Index, IndexMut};
+use rgb::{Rgb, Rgba, Gray_v09 as Gray, GrayA};
 
 use num_traits::{NumCast, ToPrimitive, Zero};
 
@@ -252,6 +253,22 @@ impl From<ColorType> for ExtendedColorType {
     }
 }
 
+pub trait ColorModel {
+    const COLOR_MODEL: &'static str;
+}
+impl<T> ColorModel for Rgb<T> {
+    const COLOR_MODEL: &'static str = "RGB";
+}
+impl<T> ColorModel for Rgba<T> {
+    const COLOR_MODEL: &'static str = "RGB";
+}
+impl<T> ColorModel for Gray<T> {
+    const COLOR_MODEL: &'static str = "Y";
+}
+impl<T> ColorModel for GrayA<T> {
+    const COLOR_MODEL: &'static str = "YA";
+}
+
 macro_rules! define_colors {
     {$(
         $(#[$doc:meta])*
@@ -268,43 +285,6 @@ $(#[$doc])*
 pub struct $ident<T> (pub [T; $channels]);
 
 impl<T: $($bound+)*> Pixel for $ident<T> {
-    type Subpixel = T;
-
-    const CHANNEL_COUNT: u8 = $channels;
-
-    #[inline(always)]
-    fn channels(&self) -> &[T] {
-        &self.0
-    }
-
-    #[inline(always)]
-    fn channels_mut(&mut self) -> &mut [T] {
-        &mut self.0
-    }
-
-    const COLOR_MODEL: &'static str = $interpretation;
-
-    fn channels4(&self) -> (T, T, T, T) {
-        const CHANNELS: usize = $channels;
-        let mut channels = [T::DEFAULT_MAX_VALUE; 4];
-        channels[0..CHANNELS].copy_from_slice(&self.0);
-        (channels[0], channels[1], channels[2], channels[3])
-    }
-
-    fn from_channels(a: T, b: T, c: T, d: T,) -> $ident<T> {
-        const CHANNELS: usize = $channels;
-        *<$ident<T> as Pixel>::from_slice(&[a, b, c, d][..CHANNELS])
-    }
-
-    fn from_slice(slice: &[T]) -> &$ident<T> {
-        assert_eq!(slice.len(), $channels);
-        unsafe { &*(slice.as_ptr() as *const $ident<T>) }
-    }
-    fn from_slice_mut(slice: &mut [T]) -> &mut $ident<T> {
-        assert_eq!(slice.len(), $channels);
-        unsafe { &mut *(slice.as_mut_ptr() as *mut $ident<T>) }
-    }
-
     fn to_rgb(&self) -> Rgb<T> {
         let mut pix = Rgb([Zero::zero(), Zero::zero(), Zero::zero()]);
         pix.from_color(self);
@@ -407,17 +387,6 @@ impl<T> From<[T; $channels]> for $ident<T> {
 }
 
 define_colors! {
-    /// RGB colors.
-    ///
-    /// For the purpose of color conversion, as well as blending, the implementation of `Pixel`
-    /// assumes an `sRGB` color space of its data.
-    pub struct Rgb<T: Primitive Enlargeable>([T; 3, 0]) = "RGB";
-    /// Grayscale colors.
-    pub struct Luma<T: Primitive>([T; 1, 0]) = "Y";
-    /// RGB colors + alpha channel
-    pub struct Rgba<T: Primitive Enlargeable>([T; 4, 1]) = "RGBA";
-    /// Grayscale colors + alpha channel
-    pub struct LumaA<T: Primitive>([T; 2, 1]) = "YA";
 }
 
 /// Convert from one pixel component type to another. For example, convert from `u8` to `f32` pixel values.
