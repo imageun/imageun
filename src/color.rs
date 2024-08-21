@@ -1,5 +1,4 @@
-use std::ops::{Index, IndexMut};
-use rgb::{Rgb, Rgba, Gray_v09 as Gray, GrayA};
+pub use rgb::{GrayA as LumaA, Gray_v09 as Luma, Rgb, Rgba};
 
 use num_traits::{NumCast, ToPrimitive, Zero};
 
@@ -262,10 +261,10 @@ impl<T> ColorModel for Rgb<T> {
 impl<T> ColorModel for Rgba<T> {
     const COLOR_MODEL: &'static str = "RGB";
 }
-impl<T> ColorModel for Gray<T> {
+impl<T> ColorModel for Luma<T> {
     const COLOR_MODEL: &'static str = "Y";
 }
-impl<T> ColorModel for GrayA<T> {
+impl<T> ColorModel for LumaA<T> {
     const COLOR_MODEL: &'static str = "YA";
 }
 
