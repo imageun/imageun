@@ -145,15 +145,11 @@ impl Rgbe8Pixel {
     #[inline]
     pub(crate) fn to_hdr(self) -> Rgb<f32> {
         if self.e == 0 {
-            Rgb([0.0, 0.0, 0.0])
+            Rgb{ r: 0.0, g: 0.0, b: 0.0 }
         } else {
             //            let exp = f32::ldexp(1., self.e as isize - (128 + 8)); // unstable
             let exp = f32::exp2(<f32 as From<_>>::from(self.e) - (128.0 + 8.0));
-            Rgb([
-                exp * <f32 as From<_>>::from(self.c[0]),
-                exp * <f32 as From<_>>::from(self.c[1]),
-                exp * <f32 as From<_>>::from(self.c[2]),
-            ])
+            Rgb{ r: exp * <f32 as From<_>>::from(self.c[0]), g: exp * <f32 as From<_>>::from(self.c[1]), b: exp * <f32 as From<_>>::from(self.c[2]) }
         }
     }
 }

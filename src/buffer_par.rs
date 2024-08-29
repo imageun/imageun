@@ -12,15 +12,15 @@ use crate::ImageBuffer;
 pub struct PixelsPar<'a, P>
 where
     P: Pixel + Sync + 'a,
-    P::Subpixel: Sync + 'a,
+    P::Component: Sync + 'a,
 {
-    chunks: ChunksExact<'a, P::Subpixel>,
+    chunks: ChunksExact<'a, P::Component>,
 }
 
 impl<'a, P> ParallelIterator for PixelsPar<'a, P>
 where
     P: Pixel + Sync + 'a,
-    P::Subpixel: Sync + 'a,
+    P::Component: Sync + 'a,
 {
     type Item = &'a P;
 
@@ -29,7 +29,7 @@ where
         C: UnindexedConsumer<Self::Item>,
     {
         self.chunks
-            .map(|v| <P as Pixel>::from_slice(v))
+            .map(|v| bytemuck::cast_ref::<_, P>(v))
             .drive_unindexed(consumer)
     }
 
@@ -41,11 +41,11 @@ where
 impl<'a, P> IndexedParallelIterator for PixelsPar<'a, P>
 where
     P: Pixel + Sync + 'a,
-    P::Subpixel: Sync + 'a,
+    P::Component: Sync + 'a,
 {
     fn drive<C: Consumer<Self::Item>>(self, consumer: C) -> C::Result {
         self.chunks
-            .map(|v| <P as Pixel>::from_slice(v))
+            .map(|v| bytemuck::cast_ref::<_, P>(v))
             .drive(consumer)
     }
 
@@ -55,7 +55,7 @@ where
 
     fn with_producer<CB: ProducerCallback<Self::Item>>(self, callback: CB) -> CB::Output {
         self.chunks
-            .map(|v| <P as Pixel>::from_slice(v))
+            .map(|v| bytemuck::cast_ref::<_, P>(v))
             .with_producer(callback)
     }
 }
@@ -63,7 +63,7 @@ where
 impl<P> fmt::Debug for PixelsPar<'_, P>
 where
     P: Pixel + Sync,
-    P::Subpixel: Sync + fmt::Debug,
+    P::Component: Sync + fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("PixelsPar")
@@ -76,15 +76,15 @@ where
 pub struct PixelsMutPar<'a, P>
 where
     P: Pixel + Send + Sync + 'a,
-    P::Subpixel: Send + Sync + 'a,
+    P::Component: Send + Sync + 'a,
 {
-    chunks: ChunksExactMut<'a, P::Subpixel>,
+    chunks: ChunksExactMut<'a, P::Component>,
 }
 
 impl<'a, P> ParallelIterator for PixelsMutPar<'a, P>
 where
     P: Pixel + Send + Sync + 'a,
-    P::Subpixel: Send + Sync + 'a,
+    P::Component: Send + Sync + 'a,
 {
     type Item = &'a mut P;
 
@@ -93,7 +93,7 @@ where
         C: UnindexedConsumer<Self::Item>,
     {
         self.chunks
-            .map(|v| <P as Pixel>::from_slice_mut(v))
+            .map(|v| bytemuck::cast_mut::<_, P>(v))
             .drive_unindexed(consumer)
     }
 
@@ -105,11 +105,11 @@ where
 impl<'a, P> IndexedParallelIterator for PixelsMutPar<'a, P>
 where
     P: Pixel + Send + Sync + 'a,
-    P::Subpixel: Send + Sync + 'a,
+    P::Component: Send + Sync + 'a,
 {
     fn drive<C: Consumer<Self::Item>>(self, consumer: C) -> C::Result {
         self.chunks
-            .map(|v| <P as Pixel>::from_slice_mut(v))
+            .map(|v| bytemuck::cast_mut::<_, P>(v))
             .drive(consumer)
     }
 
@@ -119,7 +119,7 @@ where
 
     fn with_producer<CB: ProducerCallback<Self::Item>>(self, callback: CB) -> CB::Output {
         self.chunks
-            .map(|v| <P as Pixel>::from_slice_mut(v))
+            .map(|v| bytemuck::cast_mut::<_, P>(v))
             .with_producer(callback)
     }
 }
@@ -127,7 +127,7 @@ where
 impl<P> fmt::Debug for PixelsMutPar<'_, P>
 where
     P: Pixel + Send + Sync,
-    P::Subpixel: Send + Sync + fmt::Debug,
+    P::Component: Send + Sync + fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("PixelsMutPar")
@@ -141,7 +141,7 @@ where
 pub struct EnumeratePixelsPar<'a, P>
 where
     P: Pixel + Sync + 'a,
-    P::Subpixel: Sync + 'a,
+    P::Component: Sync + 'a,
 {
     pixels: PixelsPar<'a, P>,
     width: u32,
@@ -150,7 +150,7 @@ where
 impl<'a, P> ParallelIterator for EnumeratePixelsPar<'a, P>
 where
     P: Pixel + Sync + 'a,
-    P::Subpixel: Sync + 'a,
+    P::Component: Sync + 'a,
 {
     type Item = (u32, u32, &'a P);
 
@@ -178,7 +178,7 @@ where
 impl<'a, P> IndexedParallelIterator for EnumeratePixelsPar<'a, P>
 where
     P: Pixel + Sync + 'a,
-    P::Subpixel: Sync + 'a,
+    P::Component: Sync + 'a,
 {
     fn drive<C: Consumer<Self::Item>>(self, consumer: C) -> C::Result {
         self.pixels
@@ -214,7 +214,7 @@ where
 impl<P> fmt::Debug for EnumeratePixelsPar<'_, P>
 where
     P: Pixel + Sync,
-    P::Subpixel: Sync + fmt::Debug,
+    P::Component: Sync + fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("EnumeratePixelsPar")
@@ -228,7 +228,7 @@ where
 pub struct EnumeratePixelsMutPar<'a, P>
 where
     P: Pixel + Send + Sync + 'a,
-    P::Subpixel: Send + Sync + 'a,
+    P::Component: Send + Sync + 'a,
 {
     pixels: PixelsMutPar<'a, P>,
     width: u32,
@@ -237,7 +237,7 @@ where
 impl<'a, P> ParallelIterator for EnumeratePixelsMutPar<'a, P>
 where
     P: Pixel + Send + Sync + 'a,
-    P::Subpixel: Send + Sync + 'a,
+    P::Component: Send + Sync + 'a,
 {
     type Item = (u32, u32, &'a mut P);
 
@@ -265,7 +265,7 @@ where
 impl<'a, P> IndexedParallelIterator for EnumeratePixelsMutPar<'a, P>
 where
     P: Pixel + Send + Sync + 'a,
-    P::Subpixel: Send + Sync + 'a,
+    P::Component: Send + Sync + 'a,
 {
     fn drive<C: Consumer<Self::Item>>(self, consumer: C) -> C::Result {
         self.pixels
@@ -301,7 +301,7 @@ where
 impl<P> fmt::Debug for EnumeratePixelsMutPar<'_, P>
 where
     P: Pixel + Send + Sync,
-    P::Subpixel: Send + Sync + fmt::Debug,
+    P::Component: Send + Sync + fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("EnumeratePixelsMutPar")
@@ -314,8 +314,8 @@ where
 impl<P, Container> ImageBuffer<P, Container>
 where
     P: Pixel + Sync,
-    P::Subpixel: Sync,
-    Container: Deref<Target = [P::Subpixel]>,
+    P::Component: Sync,
+    Container: Deref<Target = [P::Component]>,
 {
     /// Returns a parallel iterator over the pixels of this image, usable with `rayon`.
     /// See [`pixels`] for more information.
@@ -325,7 +325,7 @@ where
         PixelsPar {
             chunks: self
                 .inner_pixels()
-                .par_chunks_exact(<P as Pixel>::CHANNEL_COUNT as usize),
+                .par_chunks_exact(<P as rgb::HetPixel>::NUM_COMPONENTS as usize),
         }
     }
 
@@ -344,8 +344,8 @@ where
 impl<P, Container> ImageBuffer<P, Container>
 where
     P: Pixel + Send + Sync,
-    P::Subpixel: Send + Sync,
-    Container: Deref<Target = [P::Subpixel]> + DerefMut,
+    P::Component: Send + Sync,
+    Container: Deref<Target = [P::Component]> + DerefMut,
 {
     /// Returns a parallel iterator over the mutable pixels of this image, usable with `rayon`.
     /// See [`pixels_mut`] for more information.
@@ -355,7 +355,7 @@ where
         PixelsMutPar {
             chunks: self
                 .inner_pixels_mut()
-                .par_chunks_exact_mut(<P as Pixel>::CHANNEL_COUNT as usize),
+                .par_chunks_exact_mut(<P as rgb::HetPixel>::NUM_COMPONENTS as usize),
         }
     }
 
@@ -372,10 +372,10 @@ where
     }
 }
 
-impl<P> ImageBuffer<P, Vec<P::Subpixel>>
+impl<P> ImageBuffer<P, Vec<P::Component>>
 where
     P: Pixel + Send + Sync,
-    P::Subpixel: Send + Sync,
+    P::Component: Send + Sync,
 {
     /// Constructs a new `ImageBuffer` by repeated application of the supplied function,
     /// utilizing multi-threading via `rayon`.
@@ -385,7 +385,7 @@ where
     /// # Panics
     ///
     /// Panics when the resulting image is larger the the maximum size of a vector.
-    pub fn from_par_fn<F>(width: u32, height: u32, f: F) -> ImageBuffer<P, Vec<P::Subpixel>>
+    pub fn from_par_fn<F>(width: u32, height: u32, f: F) -> ImageBuffer<P, Vec<P::Component>>
     where
         F: Fn(u32, u32) -> P + Send + Sync,
     {
@@ -430,7 +430,7 @@ mod test {
     #[test]
     fn iter_parity() {
         let mut image1 = RgbImage::from_fn(17, 29, |x, y| {
-            Rgb(std::array::from_fn(|i| {
+            Rgb::from(std::array::from_fn(|i| {
                 ((x + y * 98 + i as u32 * 27) % 255) as u8
             }))
         });
@@ -489,7 +489,7 @@ mod benchmarks {
     fn pixel_func() -> Rgb<u8> {
         use std::collections::hash_map::RandomState;
         use std::hash::{BuildHasher, Hasher};
-        Rgb(std::array::from_fn(|_| {
+        Rgb::from(std::array::from_fn(|_| {
             RandomState::new().build_hasher().finish() as u8
         }))
     }

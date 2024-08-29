@@ -606,15 +606,15 @@ impl<Buffer> FlatSamples<Buffer> {
     /// buffer. It also checks that the specified pixel format expects the same number of channels
     /// that are present in this buffer. Neither are larger nor a smaller number will be accepted.
     /// There is no automatic conversion.
-    pub fn as_view<P>(&self) -> Result<View<&[P::Subpixel], P>, Error>
+    pub fn as_view<P>(&self) -> Result<View<&[P::Component], P>, Error>
     where
         P: Pixel,
-        Buffer: AsRef<[P::Subpixel]>,
+        Buffer: AsRef<[P::Component]>,
     {
-        if self.layout.channels != P::CHANNEL_COUNT {
+        if self.layout.channels != <P as rgb::HetPixel>::NUM_COMPONENTS {
             return Err(Error::ChannelCountMismatch(
                 self.layout.channels,
-                P::CHANNEL_COUNT,
+                <P as rgb::HetPixel>::NUM_COMPONENTS,
             ));
         }
 
@@ -648,15 +648,15 @@ impl<Buffer> FlatSamples<Buffer> {
     /// **WARNING**: Note that of course samples may alias, so that the mutable reference returned
     /// for one sample can in fact modify other samples as well. Sometimes exactly this is
     /// intended.
-    pub fn as_view_with_mut_samples<P>(&mut self) -> Result<View<&mut [P::Subpixel], P>, Error>
+    pub fn as_view_with_mut_samples<P>(&mut self) -> Result<View<&mut [P::Component], P>, Error>
     where
         P: Pixel,
-        Buffer: AsMut<[P::Subpixel]>,
+        Buffer: AsMut<[P::Component]>,
     {
-        if self.layout.channels != P::CHANNEL_COUNT {
+        if self.layout.channels != <P as rgb::HetPixel>::NUM_COMPONENTS {
             return Err(Error::ChannelCountMismatch(
                 self.layout.channels,
-                P::CHANNEL_COUNT,
+                <P as rgb::HetPixel>::NUM_COMPONENTS,
             ));
         }
 
@@ -686,19 +686,19 @@ impl<Buffer> FlatSamples<Buffer> {
     /// provides many more operations, is possibly faster (if not you may want to open an issue) is
     /// generally polished. You can also try to convert this buffer inline, see
     /// `ImageBuffer::from_raw`.
-    pub fn as_view_mut<P>(&mut self) -> Result<ViewMut<&mut [P::Subpixel], P>, Error>
+    pub fn as_view_mut<P>(&mut self) -> Result<ViewMut<&mut [P::Component], P>, Error>
     where
         P: Pixel,
-        Buffer: AsMut<[P::Subpixel]>,
+        Buffer: AsMut<[P::Component]>,
     {
         if !self.layout.is_normal(NormalForm::PixelPacked) {
             return Err(Error::NormalFormRequired(NormalForm::PixelPacked));
         }
 
-        if self.layout.channels != P::CHANNEL_COUNT {
+        if self.layout.channels != <P as rgb::HetPixel>::NUM_COMPONENTS {
             return Err(Error::ChannelCountMismatch(
                 self.layout.channels,
-                P::CHANNEL_COUNT,
+                <P as rgb::HetPixel>::NUM_COMPONENTS,
             ));
         }
 
@@ -787,16 +787,16 @@ impl<Buffer> FlatSamples<Buffer> {
     pub fn try_into_buffer<P>(self) -> Result<ImageBuffer<P, Buffer>, (Error, Self)>
     where
         P: Pixel + 'static,
-        P::Subpixel: 'static,
-        Buffer: Deref<Target = [P::Subpixel]>,
+        P::Component: 'static,
+        Buffer: Deref<Target = [P::Component]>,
     {
         if !self.is_normal(NormalForm::RowMajorPacked) {
             return Err((Error::NormalFormRequired(NormalForm::RowMajorPacked), self));
         }
 
-        if self.layout.channels != P::CHANNEL_COUNT {
+        if self.layout.channels != <P as rgb::HetPixel>::NUM_COMPONENTS {
             return Err((
-                Error::ChannelCountMismatch(self.layout.channels, P::CHANNEL_COUNT),
+                Error::ChannelCountMismatch(self.layout.channels, <P as rgb::HetPixel>::NUM_COMPONENTS),
                 self,
             ));
         }
@@ -937,7 +937,7 @@ impl<Buffer> FlatSamples<Buffer> {
     }
 }
 
-impl<'buf, Subpixel> FlatSamples<&'buf [Subpixel]> {
+impl<'buf, Component> FlatSamples<&'buf [Component]> {
     /// Create a monocolor image from a single pixel.
     ///
     /// This can be used as a very cheap source of a `GenericImageView` with an arbitrary number of
@@ -960,13 +960,13 @@ impl<'buf, Subpixel> FlatSamples<&'buf [Subpixel]> {
     /// ```
     pub fn with_monocolor<P>(pixel: &'buf P, width: u32, height: u32) -> Self
     where
-        P: Pixel<Subpixel = Subpixel>,
-        Subpixel: crate::Primitive,
+        P: Pixel<Component = Component>,
+        Component: crate::Primitive,
     {
         FlatSamples {
-            samples: pixel.channels(),
+            samples: pixel.as_array(),
             layout: SampleLayout {
-                channels: P::CHANNEL_COUNT,
+                channels: <P as rgb::HetPixel>::NUM_COMPONENTS,
                 channel_stride: 1,
                 width,
                 width_stride: 0,
@@ -997,7 +997,7 @@ impl<'buf, Subpixel> FlatSamples<&'buf [Subpixel]> {
 #[derive(Clone, Debug)]
 pub struct View<Buffer, P: Pixel>
 where
-    Buffer: AsRef<[P::Subpixel]>,
+    Buffer: AsRef<[P::Component]>,
 {
     inner: FlatSamples<Buffer>,
     phantom: PhantomData<P>,
@@ -1007,7 +1007,7 @@ where
 ///
 /// While this wraps a buffer similar to `ImageBuffer`, this is mostly intended as a utility. The
 /// library endorsed normalized representation is still `ImageBuffer`. Also, the implementation of
-/// `AsMut<[P::Subpixel]>` must always yield the same buffer. Therefore there is no public way to
+/// `AsMut<[P::Component]>` must always yield the same buffer. Therefore there is no public way to
 /// construct this with an owning buffer.
 ///
 /// # Inner invariants
@@ -1020,7 +1020,7 @@ where
 #[derive(Clone, Debug)]
 pub struct ViewMut<Buffer, P: Pixel>
 where
-    Buffer: AsMut<[P::Subpixel]>,
+    Buffer: AsMut<[P::Component]>,
 {
     inner: FlatSamples<Buffer>,
     phantom: PhantomData<P>,
@@ -1099,7 +1099,7 @@ pub enum NormalForm {
 
 impl<Buffer, P: Pixel> View<Buffer, P>
 where
-    Buffer: AsRef<[P::Subpixel]>,
+    Buffer: AsRef<[P::Component]>,
 {
     /// Take out the sample buffer.
     ///
@@ -1130,7 +1130,7 @@ where
     ///
     /// This method will return `None` when the sample is out-of-bounds. All errors that could
     /// occur due to overflow have been eliminated while construction the `View`.
-    pub fn get_sample(&self, channel: u8, x: u32, y: u32) -> Option<&P::Subpixel> {
+    pub fn get_sample(&self, channel: u8, x: u32, y: u32) -> Option<&P::Component> {
         if !self.inner.in_bounds(channel, x, y) {
             return None;
         }
@@ -1148,9 +1148,9 @@ where
     ///
     /// **WARNING**: Note that of course samples may alias, so that the mutable reference returned
     /// here can in fact modify more than the coordinate in the argument.
-    pub fn get_mut_sample(&mut self, channel: u8, x: u32, y: u32) -> Option<&mut P::Subpixel>
+    pub fn get_mut_sample(&mut self, channel: u8, x: u32, y: u32) -> Option<&mut P::Component>
     where
-        Buffer: AsMut<[P::Subpixel]>,
+        Buffer: AsMut<[P::Component]>,
     {
         if !self.inner.in_bounds(channel, x, y) {
             return None;
@@ -1172,7 +1172,7 @@ where
     ///
     /// While this can not fail–the validity of all coordinates has been validated during the
     /// conversion from `FlatSamples`–the resulting slice may still contain holes.
-    pub fn image_slice(&self) -> &[P::Subpixel] {
+    pub fn image_slice(&self) -> &[P::Component] {
         &self.samples().as_ref()[..self.min_length()]
     }
 
@@ -1181,9 +1181,9 @@ where
     /// This is relevant only when constructed with `FlatSamples::as_view_with_mut_samples`. While
     /// this can not fail–the validity of all coordinates has been validated during the conversion
     /// from `FlatSamples`–the resulting slice may still contain holes.
-    pub fn image_mut_slice(&mut self) -> &mut [P::Subpixel]
+    pub fn image_mut_slice(&mut self) -> &mut [P::Component]
     where
-        Buffer: AsMut<[P::Subpixel]>,
+        Buffer: AsMut<[P::Component]>,
     {
         let min_length = self.min_length();
         &mut self.inner.samples.as_mut()[..min_length]
@@ -1219,7 +1219,7 @@ where
     /// ```
     pub fn try_upgrade(self) -> Result<ViewMut<Buffer, P>, (Error, Self)>
     where
-        Buffer: AsMut<[P::Subpixel]>,
+        Buffer: AsMut<[P::Component]>,
     {
         if !self.inner.is_normal(NormalForm::PixelPacked) {
             return Err((Error::NormalFormRequired(NormalForm::PixelPacked), self));
@@ -1235,7 +1235,7 @@ where
 
 impl<Buffer, P: Pixel> ViewMut<Buffer, P>
 where
-    Buffer: AsMut<[P::Subpixel]>,
+    Buffer: AsMut<[P::Component]>,
 {
     /// Take out the sample buffer.
     ///
@@ -1274,9 +1274,9 @@ where
     ///
     /// This method will return `None` when the sample is out-of-bounds. All errors that could
     /// occur due to overflow have been eliminated while construction the `View`.
-    pub fn get_sample(&self, channel: u8, x: u32, y: u32) -> Option<&P::Subpixel>
+    pub fn get_sample(&self, channel: u8, x: u32, y: u32) -> Option<&P::Component>
     where
-        Buffer: AsRef<[P::Subpixel]>,
+        Buffer: AsRef<[P::Component]>,
     {
         if !self.inner.in_bounds(channel, x, y) {
             return None;
@@ -1291,7 +1291,7 @@ where
     ///
     /// This method will return `None` when the sample is out-of-bounds. All errors that could
     /// occur due to overflow have been eliminated while construction the `View`.
-    pub fn get_mut_sample(&mut self, channel: u8, x: u32, y: u32) -> Option<&mut P::Subpixel> {
+    pub fn get_mut_sample(&mut self, channel: u8, x: u32, y: u32) -> Option<&mut P::Component> {
         if !self.inner.in_bounds(channel, x, y) {
             return None;
         }
@@ -1305,15 +1305,15 @@ where
     ///
     /// While this can not fail–the validity of all coordinates has been validated during the
     /// conversion from `FlatSamples`–the resulting slice may still contain holes.
-    pub fn image_slice(&self) -> &[P::Subpixel]
+    pub fn image_slice(&self) -> &[P::Component]
     where
-        Buffer: AsRef<[P::Subpixel]>,
+        Buffer: AsRef<[P::Component]>,
     {
         &self.inner.samples.as_ref()[..self.min_length()]
     }
 
     /// Return the mutable buffer that holds sample values.
-    pub fn image_mut_slice(&mut self) -> &mut [P::Subpixel] {
+    pub fn image_mut_slice(&mut self) -> &mut [P::Component] {
         let length = self.min_length();
         &mut self.inner.samples.as_mut()[..length]
     }
@@ -1394,7 +1394,7 @@ where
 
 impl<Buffer, P: Pixel> GenericImageView for View<Buffer, P>
 where
-    Buffer: AsRef<[P::Subpixel]>,
+    Buffer: AsRef<[P::Component]>,
 {
     type Pixel = P;
 
@@ -1409,7 +1409,7 @@ where
 
         let image = self.inner.samples.as_ref();
         let base_index = self.inner.in_bounds_index(0, x, y);
-        let channels = P::CHANNEL_COUNT as usize;
+        let channels = <P as rgb::HetPixel>::NUM_COMPONENTS as usize;
 
         let mut buffer = [Zero::zero(); 256];
         buffer
@@ -1421,13 +1421,13 @@ where
                 *to = image[index];
             });
 
-        *P::from_slice(&buffer[..channels])
+        *bytemuck::cast_ref::<_, P>(&buffer[..channels])
     }
 }
 
 impl<Buffer, P: Pixel> GenericImageView for ViewMut<Buffer, P>
 where
-    Buffer: AsMut<[P::Subpixel]> + AsRef<[P::Subpixel]>,
+    Buffer: AsMut<[P::Component]> + AsRef<[P::Component]>,
 {
     type Pixel = P;
 
@@ -1442,7 +1442,7 @@ where
 
         let image = self.inner.samples.as_ref();
         let base_index = self.inner.in_bounds_index(0, x, y);
-        let channels = P::CHANNEL_COUNT as usize;
+        let channels = <P as rgb::HetPixel>::NUM_COMPONENTS as usize;
 
         let mut buffer = [Zero::zero(); 256];
         buffer
@@ -1454,13 +1454,13 @@ where
                 *to = image[index];
             });
 
-        *P::from_slice(&buffer[..channels])
+        *bytemuck::cast_ref::<_, P>(&buffer[..channels])
     }
 }
 
 impl<Buffer, P: Pixel> GenericImage for ViewMut<Buffer, P>
 where
-    Buffer: AsMut<[P::Subpixel]> + AsRef<[P::Subpixel]>,
+    Buffer: AsMut<[P::Component]> + AsRef<[P::Component]>,
 {
     fn get_pixel_mut(&mut self, x: u32, y: u32) -> &mut Self::Pixel {
         if !self.inner.in_bounds(0, x, y) {
@@ -1468,9 +1468,9 @@ where
         }
 
         let base_index = self.inner.in_bounds_index(0, x, y);
-        let channel_count = <P as Pixel>::CHANNEL_COUNT as usize;
+        let channel_count = <P as rgb::HetPixel>::NUM_COMPONENTS as usize;
         let pixel_range = base_index..base_index + channel_count;
-        P::from_slice_mut(&mut self.inner.samples.as_mut()[pixel_range])
+        bytemuck::cast_mut::<_, P>(&mut self.inner.samples.as_mut()[pixel_range])
     }
 
     #[allow(deprecated)]
@@ -1633,7 +1633,7 @@ mod tests {
             assert_eq!(view.dimensions(), (3, 3));
             #[allow(deprecated)]
             for i in 0..9 {
-                *view.get_pixel_mut(i % 3, i / 3) = LumaA([2 * i as u16, 2 * i as u16 + 1]);
+                *view.get_pixel_mut(i % 3, i / 3) = LumaA{ v: 2 * i as u16, a: 2 * i as u16 + 1 };
             }
         }
 

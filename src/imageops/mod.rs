@@ -280,7 +280,7 @@ where
 pub fn vertical_gradient<S, P, I>(img: &mut I, start: &P, stop: &P)
 where
     I: GenericImage<Pixel = P>,
-    P: Pixel<Subpixel = S> + 'static,
+    P: Pixel<Component = S> + 'static,
     S: Primitive + Lerp + 'static,
 {
     for y in 0..img.height() {
@@ -313,7 +313,7 @@ where
 pub fn horizontal_gradient<S, P, I>(img: &mut I, start: &P, stop: &P)
 where
     I: GenericImage<Pixel = P>,
-    P: Pixel<Subpixel = S> + 'static,
+    P: Pixel<Component = S> + 'static,
     S: Primitive + Lerp + 'static,
 {
     for x in 0..img.width() {
@@ -398,7 +398,7 @@ mod tests {
     /// Test that images written into other images works
     fn test_image_in_image() {
         let mut target = ImageBuffer::new(32, 32);
-        let source = ImageBuffer::from_pixel(16, 16, Rgb([255u8, 0, 0]));
+        let source = ImageBuffer::from_pixel(16, 16, Rgb{ r: 255u8, g: 0, b: 0 });
         overlay(&mut target, &source, 0, 0);
         assert!(*target.get_pixel(0, 0) == Rgb([255u8, 0, 0]));
         assert!(*target.get_pixel(15, 0) == Rgb([255u8, 0, 0]));
@@ -411,7 +411,7 @@ mod tests {
     /// Test that images written outside of a frame doesn't blow up
     fn test_image_in_image_outside_of_bounds() {
         let mut target = ImageBuffer::new(32, 32);
-        let source = ImageBuffer::from_pixel(32, 32, Rgb([255u8, 0, 0]));
+        let source = ImageBuffer::from_pixel(32, 32, Rgb{ r: 255u8, g: 0, b: 0 });
         overlay(&mut target, &source, 1, 1);
         assert!(*target.get_pixel(0, 0) == Rgb([0, 0, 0]));
         assert!(*target.get_pixel(1, 1) == Rgb([255u8, 0, 0]));
@@ -423,7 +423,7 @@ mod tests {
     /// (issue came up in #848)
     fn test_image_outside_image_no_wrap_around() {
         let mut target = ImageBuffer::new(32, 32);
-        let source = ImageBuffer::from_pixel(32, 32, Rgb([255u8, 0, 0]));
+        let source = ImageBuffer::from_pixel(32, 32, Rgb{ r: 255u8, g: 0, b: 0 });
         overlay(&mut target, &source, 33, 33);
         assert!(*target.get_pixel(0, 0) == Rgb([0, 0, 0]));
         assert!(*target.get_pixel(1, 1) == Rgb([0, 0, 0]));
@@ -434,7 +434,7 @@ mod tests {
     /// Test that images written to coordinates with overflow works
     fn test_image_coordinate_overflow() {
         let mut target = ImageBuffer::new(16, 16);
-        let source = ImageBuffer::from_pixel(32, 32, Rgb([255u8, 0, 0]));
+        let source = ImageBuffer::from_pixel(32, 32, Rgb{ r: 255u8, g: 0, b: 0 });
         // Overflows to 'sane' coordinates but top is larger than bot.
         overlay(
             &mut target,
@@ -454,8 +454,8 @@ mod tests {
     fn test_image_horizontal_gradient_limits() {
         let mut img = ImageBuffer::new(100, 1);
 
-        let start = Rgb([0u8, 128, 0]);
-        let end = Rgb([255u8, 255, 255]);
+        let start = Rgb{ r: 0u8, g: 128, b: 0 };
+        let end = Rgb{ r: 255u8, g: 255, b: 255 };
 
         horizontal_gradient(&mut img, &start, &end);
 
@@ -468,8 +468,8 @@ mod tests {
     fn test_image_vertical_gradient_limits() {
         let mut img = ImageBuffer::new(1, 100);
 
-        let start = Rgb([0u8, 128, 0]);
-        let end = Rgb([255u8, 255, 255]);
+        let start = Rgb{ r: 0u8, g: 128, b: 0 };
+        let end = Rgb{ r: 255u8, g: 255, b: 255 };
 
         vertical_gradient(&mut img, &start, &end);
 

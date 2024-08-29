@@ -457,7 +457,7 @@ mod test {
         let mut next_random = move || next_random.next().unwrap();
 
         let generated_image: Rgba32FImage = ImageBuffer::from_fn(9, 31, |_x, _y| {
-            Rgba([next_random(), next_random(), next_random(), next_random()])
+            Rgba{ r: next_random(), g: next_random(), b: next_random(), a: next_random() }
         });
 
         let mut bytes = vec![];
@@ -475,7 +475,7 @@ mod test {
         let mut next_random = move || next_random.next().unwrap();
 
         let generated_image: Rgb32FImage = ImageBuffer::from_fn(9, 31, |_x, _y| {
-            Rgb([next_random(), next_random(), next_random()])
+            Rgb{ r: next_random(), g: next_random(), b: next_random() }
         });
 
         let mut bytes = vec![];

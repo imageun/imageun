@@ -3,8 +3,8 @@ use image::{Pixel, Rgba, RgbaImage};
 fn main() {
     let mut img = RgbaImage::new(100, 100);
 
-    let start = Rgba::from_slice(&[0, 128, 0, 0]);
-    let end = Rgba::from_slice(&[255, 255, 255, 255]);
+    let start = bytemuck::cast_ref::<_, Rgba>(&[0, 128, 0, 0]);
+    let end = bytemuck::cast_ref::<_, Rgba>(&[255, 255, 255, 255]);
 
     image::imageops::vertical_gradient(&mut img, start, end);
     img.save("vertical_gradient.png").unwrap();

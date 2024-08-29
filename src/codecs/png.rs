@@ -318,7 +318,7 @@ impl<R: BufRead + Seek> ApngDecoder<R> {
                 previous.clone_from(current);
                 current
                     .pixels_mut()
-                    .for_each(|pixel| *pixel = Rgba([0, 0, 0, 0]));
+                    .for_each(|pixel| *pixel = Rgba{ r: 0, g: 0, b: 0, a: 0 });
             }
             DisposeOp::Previous => {
                 current.clone_from(previous);
