@@ -3,6 +3,8 @@ use std::io::{self, Read};
 use std::num::{ParseFloatError, ParseIntError};
 use std::{error, fmt};
 
+use rgb::Pixel;
+
 use crate::color::{ColorType, Rgb};
 use crate::error::{
     DecodingError, ImageError, ImageFormatHint, ImageResult, UnsupportedError, UnsupportedErrorKind,
@@ -301,11 +303,11 @@ impl<R: Read> ImageDecoder for HdrDecoder<R> {
     fn read_image(self, buf: &mut [u8]) -> ImageResult<()> {
         assert_eq!(u64::try_from(buf.len()), Ok(self.total_bytes()));
 
-        let mut img = vec![Rgb([0.0, 0.0, 0.0]); self.width as usize * self.height as usize];
+        let mut img = vec![Rgb{r:0.0, g:0.0, b:0.0}; self.width as usize * self.height as usize];
         self.read_image_transform(|pix| pix.to_hdr(), &mut img[..])?;
 
-        for (i, Rgb(data)) in img.into_iter().enumerate() {
-            buf[(i * 12)..][..12].copy_from_slice(bytemuck::cast_slice(&data));
+        for (i, pixel) in img.into_iter().enumerate() {
+            buf[(i * 12)..][..12].copy_from_slice(bytemuck::cast_slice(pixel.as_array()));
         }
 
         Ok(())

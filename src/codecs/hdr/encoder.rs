@@ -23,7 +23,7 @@ impl<W: Write> ImageEncoder for HdrEncoder<W> {
                 let bytes_per_pixel = color_type.bits_per_pixel() as usize / 8;
                 let rgbe_pixels = unaligned_bytes
                     .chunks_exact(bytes_per_pixel)
-                    .map(|bytes| to_rgbe8(Rgb::<f32>(bytemuck::pod_read_unaligned(bytes))));
+                    .map(|bytes| to_rgbe8(Rgb::<f32>::from(bytemuck::pod_read_unaligned::<[f32; 3]>(bytes))));
 
                 // the length will be checked inside encode_pixels
                 self.encode_pixels(rgbe_pixels, width as usize, height as usize)
@@ -275,8 +275,7 @@ fn write_rgbe8<W: Write>(w: &mut W, v: Rgbe8Pixel) -> Result<()> {
 
 /// Converts ```Rgb<f32>``` into ```Rgbe8Pixel```
 pub(crate) fn to_rgbe8(pix: Rgb<f32>) -> Rgbe8Pixel {
-    let pix = pix.0;
-    let mx = f32::max(pix[0], f32::max(pix[1], pix[2]));
+    let mx = f32::max(pix.r, f32::max(pix.g, pix.b));
     if mx <= 0.0 {
         Rgbe8Pixel { c: [0, 0, 0], e: 0 }
     } else {
@@ -284,7 +283,7 @@ pub(crate) fn to_rgbe8(pix: Rgb<f32>) -> Rgbe8Pixel {
         let exp = mx.log2().floor() as i32 + 1;
         let mul = f32::powi(2.0, exp);
         let mut conv = [0u8; 3];
-        for (cv, &sv) in conv.iter_mut().zip(pix.iter()) {
+        for (cv, sv) in conv.iter_mut().zip(pix) {
             *cv = f32::trunc(sv / mul * 256.0) as u8;
         }
         Rgbe8Pixel {
@@ -324,13 +323,13 @@ fn to_rgbe8_test() {
     fn relative_dist(a: Rgb<f32>, b: Rgb<f32>) -> f32 {
         // maximal difference divided by maximal value
         let max_diff =
-            a.0.iter()
-                .zip(b.0.iter())
-                .fold(0.0, |diff, (&a, &b)| f32::max(diff, (a - b).abs()));
+            a.into_iter()
+                .zip(b)
+                .fold(0.0, |diff, (a, b)| f32::max(diff, (a - b).abs()));
         let max_val =
-            a.0.iter()
-                .chain(b.0.iter())
-                .fold(0.0, |maxv, &a| f32::max(maxv, a));
+            a.into_iter()
+                .chain(b)
+                .fold(0.0, |maxv, a| f32::max(maxv, a));
         if max_val == 0.0 {
             0.0
         } else {

@@ -1,11 +1,13 @@
 //! Functions for altering and converting the color of pixelbufs
 
 use num_traits::NumCast;
+use rgb::Pixel;
+use rgb::Rgb;
 use std::f64::consts::PI;
 
 use crate::color::{FromColor, IntoColor, Luma, LumaA};
 use crate::image::{GenericImage, GenericImageView};
-use crate::traits::{Pixel, Primitive};
+use crate::traits::Primitive;
 use crate::utils::clamp;
 use crate::ImageBuffer;
 
@@ -288,6 +290,7 @@ where
 pub fn huerotate_in_place<I>(image: &mut I, value: i32)
 where
     I: GenericImage,
+    I::Pixel: Into<Rgb<<I::Pixel as Pixel>::Component>>,
 {
     let (width, height) = image.dimensions();
 
@@ -477,9 +480,9 @@ macro_rules! do_dithering(
             let old_pixel = $image[($x, $y)];
             let new_pixel = $image.get_pixel_mut($x, $y);
             $map.map_color(new_pixel);
-            for ((e, &old), &new) in $err.iter_mut()
-                                        .zip(old_pixel.channels().iter())
-                                        .zip(new_pixel.channels().iter())
+            for ((e, old), new) in $err.iter_mut()
+                                        .zip(old_pixel.to_array())
+                                        .zip(new_pixel.to_array())
             {
                 *e = <i16 as From<_>>::from(old) - <i16 as From<_>>::from(new)
             }
@@ -537,7 +540,9 @@ where
 {
     let mut indices = ImageBuffer::new(image.width(), image.height());
     for (pixel, idx) in image.pixels().zip(indices.pixels_mut()) {
-        *idx = Luma{ v: color_map.index_of(pixel) as u8 };
+        *idx = Luma {
+            v: color_map.index_of(pixel) as u8,
+        };
     }
     indices
 }
