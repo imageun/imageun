@@ -18,13 +18,13 @@ use crate::{ImageBuffer, Rgba32FImage};
 ///
 /// To test the different sampling filters on a real example, you can find two
 /// examples called
-/// [`scaledown`](https://github.com/image-rs/image/tree/master/examples/scaledown)
+/// [`scaledown`](https://github.com/imageun/imageun/tree/master/examples/scaledown)
 /// and
-/// [`scaleup`](https://github.com/image-rs/image/tree/master/examples/scaleup)
+/// [`scaleup`](https://github.com/imageun/imageun/tree/master/examples/scaleup)
 /// in the `examples` directory of the crate source code.
 ///
 /// Here is a 3.58 MiB
-/// [test image](https://github.com/image-rs/image/blob/master/examples/scaledown/test.jpg)
+/// [test image](https://github.com/imageun/imageun/blob/master/examples/scaledown/test.jpg)
 /// that has been scaled down to 300x225 px:
 ///
 /// <!-- NOTE: To test new test images locally, replace the GitHub path with `../../../docs/` -->
