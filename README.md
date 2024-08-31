@@ -1,18 +1,43 @@
-# Image
-[![crates.io](https://img.shields.io/crates/v/image.svg)](https://crates.io/crates/image)
-[![Documentation](https://docs.rs/image/badge.svg)](https://docs.rs/image)
-[![Build Status](https://github.com/image-rs/image/workflows/Rust%20CI/badge.svg)](https://github.com/image-rs/image/actions)
-[![Gitter](https://badges.gitter.im/image-rs/image.svg)](https://gitter.im/image-rs/image?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+# Imageun
 
-Maintainers: [@HeroicKatora](https://github.com/HeroicKatora), [@fintelia](https://github.com/fintelia)
+[![crates.io](https://img.shields.io/crates/v/imageun)](https://crates.io/crates/imageun)
+[![docs.rs](https://img.shields.io/docsrs/imageun)](https://docs.rs/imageun)
 
-[How to contribute](https://github.com/image-rs/organization/blob/master/CONTRIBUTING.md)
+imageun: Image Unleashed is a fork of
+[image-rs/image](https://github.com/image-rs/image) due to the limitation
+of the project not being willing to make significant breaking changes. This
+is because of the effect breaking changes would have on the library
+consumers. This is a reasonable position to take, however there exist many
+large issues with the `image-rs/image` library that have been open for many
+years due to this limitation.
 
-## An Image Processing Library
+This project's goal is to see how far the `image` library can go (how many
+issues of the upstream project we can fix) if we unleash it from it's
+breaking change chains. See [this
+issue](https://github.com/image-rs/image/issues/2318) for more info on the
+inspiration for this project.
 
-This crate provides basic image processing functions and methods for converting to and from various image formats.
+See the `FIXES.md` file for a maintained list of issues from the upstream
+project that have been fixed.
 
-All image processing functions provided operate on types that implement the `GenericImageView` and `GenericImage` traits and return an `ImageBuffer`.
+There are drawbacks with any fork of large projects in that it splits the
+code maintenance of that project, code improvements made to one project are
+now missing from the other library unless extra effort is made to port the
+improvements between the libraries. This porting can become increasingly
+difficult as the projects' codebases further diverge.
+
+I think it is also worth mentioning the
+[zune-image](https://github.com/etemesi254/zune-image) project, another
+image project with speed and performance given as reasons for making
+another image project.
+
+## An Image Encoding/Decoding Library
+
+This crate provides basic image processing functions and methods for
+converting to and from various image formats.
+
+All image processing functions provided operate on types that implement the
+`GenericImageView` and `GenericImage` traits and return an `ImageBuffer`.
 
 ## High level API
 
@@ -37,56 +62,62 @@ img2.write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)?;
 
 ## Supported Image Formats
 
-With default features enabled, `image` provides implementations of many common
-image format encoders and decoders.
+With default features enabled, `image` provides implementations of many
+common image format encoders and decoders.
 
 <!--- NOTE: Make sure to keep this table in sync with the one in src/lib.rs -->
 
-| Format   | Decoding                                  | Encoding                                |
-| -------- | ----------------------------------------- | --------------------------------------- |
-| AVIF     | Yes (8-bit only) \*                       | Yes (lossy only)                        |
-| BMP      | Yes                                       | Yes                                     |
-| DDS      | Yes                                       | ---                                      |
-| Farbfeld | Yes                                       | Yes                                     |
-| GIF      | Yes                                       | Yes                                     |
-| HDR      | Yes                                       | Yes                                     |
-| ICO      | Yes                                       | Yes                                     |
-| JPEG     | Yes                                       | Yes                                     |
-| EXR      | Yes                                       | Yes                                     |
-| PNG      | Yes                                       | Yes                                     |
-| PNM      | Yes                                       | Yes                                     |
-| QOI      | Yes                                       | Yes                                     |
-| TGA      | Yes                                       | Yes                                     |
-| TIFF     | Yes                                       | Yes                                     |
-| WebP     | Yes                                       | Yes (lossless only)                     |
+| Format   | Decoding            | Encoding            |
+| -------- | ------------------- | ------------------- |
+| AVIF     | Yes (8-bit only) \* | Yes (lossy only)    |
+| BMP      | Yes                 | Yes                 |
+| DDS      | Yes                 | ---                 |
+| Farbfeld | Yes                 | Yes                 |
+| GIF      | Yes                 | Yes                 |
+| HDR      | Yes                 | Yes                 |
+| ICO      | Yes                 | Yes                 |
+| JPEG     | Yes                 | Yes                 |
+| EXR      | Yes                 | Yes                 |
+| PNG      | Yes                 | Yes                 |
+| PNM      | Yes                 | Yes                 |
+| QOI      | Yes                 | Yes                 |
+| TGA      | Yes                 | Yes                 |
+| TIFF     | Yes                 | Yes                 |
+| WebP     | Yes                 | Yes (lossless only) |
 
 - \* Requires the `avif-native` feature, uses the libdav1d C library.
 
 ## Image Types
 
 This crate provides a number of different types for representing images.
-Individual pixels within images are indexed with (0,0) at the top left corner.
+Individual pixels within images are indexed with (0,0) at the top left
+corner.
 
 ### [`ImageBuffer`](https://docs.rs/image/*/image/struct.ImageBuffer.html)
-An image parameterised by its Pixel type, represented by a width and height and
-a vector of pixels. It provides direct access to its pixels and implements the
-`GenericImageView` and `GenericImage` traits.
+
+An image parameterised by its Pixel type, represented by a width and height
+and a vector of pixels. It provides direct access to its pixels and
+implements the `GenericImageView` and `GenericImage` traits.
 
 ### [`DynamicImage`](https://docs.rs/image/*/image/enum.DynamicImage.html)
-A `DynamicImage` is an enumeration over all supported `ImageBuffer<P>` types.
-Its exact image type is determined at runtime. It is the type returned when
-opening an image. For convenience `DynamicImage` reimplements all image
-processing functions.
+
+A `DynamicImage` is an enumeration over all supported `ImageBuffer<P>`
+types. Its exact image type is determined at runtime. It is the type
+returned when opening an image. For convenience `DynamicImage` reimplements
+all image processing functions.
 
 ### The [`GenericImageView`](https://docs.rs/image/*/image/trait.GenericImageView.html) and [`GenericImage`](https://docs.rs/image/*/image/trait.GenericImage.html) Traits
 
-Traits that provide methods for inspecting (`GenericImageView`) and manipulating (`GenericImage`) images, parameterised over the image's pixel type.
+Traits that provide methods for inspecting (`GenericImageView`) and
+manipulating (`GenericImage`) images, parameterised over the image's pixel
+type.
 
 ### [`SubImage`](https://docs.rs/image/*/image/struct.SubImage.html)
-A view into another image, delimited by the coordinates of a rectangle.
-The coordinates given set the position of the top left corner of the rectangle.
-This is used to perform image processing functions on a subregion of an image.
 
+A view into another image, delimited by the coordinates of a rectangle. The
+coordinates given set the position of the top left corner of the rectangle.
+This is used to perform image processing functions on a subregion of an
+image.
 
 ## The [`ImageDecoder`](https://docs.rs/image/*/image/trait.ImageDecoder.html) and [`ImageDecoderRect`](https://docs.rs/image/*/image/trait.ImageDecoderRect.html) Traits
 
@@ -96,46 +127,53 @@ additionally provide `ImageDecoderRect` implementations which allow for
 decoding only part of an image at once.
 
 The most important methods for decoders are...
-+ **dimensions**: Return a tuple containing the width and height of the image.
-+ **color_type**: Return the color type of the image data produced by this decoder.
-+ **read_image**: Decode the entire image into a slice of bytes.
+
+- **dimensions**: Return a tuple containing the width and height of the image.
+- **color_type**: Return the color type of the image data produced by this decoder.
+- **read_image**: Decode the entire image into a slice of bytes.
 
 ## Pixels
 
 `image` provides the following pixel types:
-+ **Rgb**: RGB pixel
-+ **Rgba**: RGB with alpha (RGBA pixel)
-+ **Luma**: Grayscale pixel
-+ **LumaA**: Grayscale with alpha
+
+- **Rgb**: RGB pixel
+- **Rgba**: RGB with alpha (RGBA pixel)
+- **Luma**: Grayscale pixel
+- **LumaA**: Grayscale with alpha
 
 All pixels are parameterised by their component type.
 
 ## Image Processing Functions
-These are the functions defined in the `imageops` module. All functions operate on types that implement the `GenericImage` trait.
-Note that some of the functions are very slow in debug mode. Make sure to use release mode if you experience any performance issues.
 
-+ **blur**: Performs a Gaussian blur on the supplied image.
-+ **brighten**: Brighten the supplied image.
-+ **huerotate**: Hue rotate the supplied image by degrees.
-+ **contrast**: Adjust the contrast of the supplied image.
-+ **crop**: Return a mutable view into an image.
-+ **filter3x3**: Perform a 3x3 box filter on the supplied image.
-+ **flip_horizontal**: Flip an image horizontally.
-+ **flip_vertical**: Flip an image vertically.
-+ **grayscale**: Convert the supplied image to grayscale.
-+ **invert**: Invert each pixel within the supplied image This function operates in place.
-+ **resize**: Resize the supplied image to the specified dimensions.
-+ **rotate180**: Rotate an image 180 degrees clockwise.
-+ **rotate270**: Rotate an image 270 degrees clockwise.
-+ **rotate90**: Rotate an image 90 degrees clockwise.
-+ **unsharpen**: Performs an unsharpen mask on the supplied image.
+These are the functions defined in the `imageops` module. All functions
+operate on types that implement the `GenericImage` trait. Note that some of
+the functions are very slow in debug mode. Make sure to use release mode if
+you experience any performance issues.
+
+- **blur**: Performs a Gaussian blur on the supplied image.
+- **brighten**: Brighten the supplied image.
+- **huerotate**: Hue rotate the supplied image by degrees.
+- **contrast**: Adjust the contrast of the supplied image.
+- **crop**: Return a mutable view into an image.
+- **filter3x3**: Perform a 3x3 box filter on the supplied image.
+- **flip_horizontal**: Flip an image horizontally.
+- **flip_vertical**: Flip an image vertically.
+- **grayscale**: Convert the supplied image to grayscale.
+- **invert**: Invert each pixel within the supplied image This function
+  operates in place.
+- **resize**: Resize the supplied image to the specified dimensions.
+- **rotate180**: Rotate an image 180 degrees clockwise.
+- **rotate270**: Rotate an image 270 degrees clockwise.
+- **rotate90**: Rotate an image 90 degrees clockwise.
+- **unsharpen**: Performs an unsharpen mask on the supplied image.
 
 For more options, see the [`imageproc`](https://crates.io/crates/imageproc) crate.
 
 ## Examples
+
 ### Opening and Saving Images
 
-`image` provides the `open` function for opening images from a path.  The image
+`image` provides the `open` function for opening images from a path. The image
 format is determined from the path's file extension. An `io` module provides a
 reader which offer some more control.
 
@@ -206,7 +244,10 @@ Example output:
 <img src="examples/fractal.png" alt="A Julia Fractal, c: -0.4 + 0.6i" width="500" />
 
 ### Writing raw buffers
-If the high level interface is not needed because the image was obtained by other means, `image` provides the function `save_buffer` to save a buffer to a file.
+
+If the high level interface is not needed because the image was obtained by
+other means, `image` provides the function `save_buffer` to save a buffer
+to a file.
 
 ```rust,no_run
 let buffer: &[u8] = unimplemented!(); // Generate the image data
@@ -214,3 +255,9 @@ let buffer: &[u8] = unimplemented!(); // Generate the image data
 // Save the buffer as "image.png"
 image::save_buffer("image.png", buffer, 800, 600, image::ExtendedColorType::Rgb8).unwrap()
 ```
+
+## Maintenance and Contributing
+
+Maintainers: [@ripytide](https://github.com/ripytide)
+
+See the `CONTRIBUTING.md` file.
