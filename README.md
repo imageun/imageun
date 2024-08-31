@@ -3,7 +3,7 @@
 [![crates.io](https://img.shields.io/crates/v/imageun)](https://crates.io/crates/imageun)
 [![docs.rs](https://img.shields.io/docsrs/imageun)](https://docs.rs/imageun)
 
-imageun: Image Unleashed is a fork of
+imageun: Image Unleashed/Imagine is a fork of
 [image-rs/image](https://github.com/image-rs/image) due to the limitation
 of the project not being willing to make significant breaking changes. This
 is because of the effect breaking changes would have on the library
