@@ -17,14 +17,16 @@ breaking change chains. See [this
 issue](https://github.com/image-rs/image/issues/2318) for more info on the
 inspiration for this project.
 
-See the `FIXES.md` file for a maintained list of issues from the upstream
+See the `FIXED.md` file for a maintained list of issues from the upstream
 project that have been fixed.
 
-There are drawbacks with any fork of large projects in that it splits the
+There are drawbacks with any forks of large projects in that it splits the
 code maintenance of that project, code improvements made to one project are
 now missing from the other library unless extra effort is made to port the
 improvements between the libraries. This porting can become increasingly
-difficult as the projects' codebases further diverge.
+difficult as the projects' codebases further diverge. Hopefully, enough
+users appreciate the fixed issues over the breaking changes for the project
+to attract users which then hopefully attracts contributions.
 
 I think it is also worth mentioning the
 [zune-image](https://github.com/etemesi254/zune-image) project, another
