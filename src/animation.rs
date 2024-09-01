@@ -2,7 +2,6 @@ use std::cmp::Ordering;
 use std::time::Duration;
 
 use crate::error::ImageResult;
-use crate::RgbaImage;
 
 /// An implementation dependent iterator, reading the frames as requested
 pub struct Frames<'a> {
@@ -73,7 +72,10 @@ impl Frame {
     #[must_use]
     pub fn new(buffer: RgbaImage) -> Frame {
         Frame {
-            delay: Delay::from_ratio(Ratio { numer: 0, denom: 1 }),
+            delay: Delay::from_ratio(Ratio {
+                numerator: 0,
+                denominator: 1,
+            }),
             left: 0,
             top: 0,
             buffer,
@@ -189,7 +191,7 @@ impl Delay {
     /// `from_numer_denom_ms` constructor.
     #[must_use]
     pub fn numer_denom_ms(self) -> (u32, u32) {
-        (self.ratio.numer, self.ratio.denom)
+        (self.ratio.numerator, self.ratio.denominator)
     }
 
     pub(crate) fn from_ratio(ratio: Ratio) -> Self {
@@ -297,16 +299,16 @@ impl From<Delay> for Duration {
     fn from(delay: Delay) -> Self {
         let ratio = delay.into_ratio();
         let ms = ratio.to_integer();
-        let rest = ratio.numer % ratio.denom;
-        let nanos = (u64::from(rest) * 1_000_000) / u64::from(ratio.denom);
+        let rest = ratio.numerator % ratio.denominator;
+        let nanos = (u64::from(rest) * 1_000_000) / u64::from(ratio.denominator);
         Duration::from_millis(ms.into()) + Duration::from_nanos(nanos)
     }
 }
 
 #[derive(Copy, Clone, Debug)]
 pub(crate) struct Ratio {
-    numer: u32,
-    denom: u32,
+    numerator: u32,
+    denominator: u32,
 }
 
 impl Ratio {
@@ -314,14 +316,14 @@ impl Ratio {
     pub(crate) fn new(numerator: u32, denominator: u32) -> Self {
         assert_ne!(denominator, 0);
         Self {
-            numer: numerator,
-            denom: denominator,
+            numerator,
+            denominator,
         }
     }
 
     #[inline]
     pub(crate) fn to_integer(self) -> u32 {
-        self.numer / self.denom
+        self.numerator / self.denominator
     }
 }
 
@@ -348,10 +350,10 @@ impl Ord for Ratio {
         // We multiply both sides by `d`:
         // a * d <cmp> c * b
 
-        let a: u32 = self.numer;
-        let b: u32 = self.denom;
-        let c: u32 = other.numer;
-        let d: u32 = other.denom;
+        let a: u32 = self.numerator;
+        let b: u32 = self.denominator;
+        let c: u32 = other.numerator;
+        let d: u32 = other.denominator;
 
         // We cast the types from `u32` to `u64` in order
         // to not overflow the multiplications.

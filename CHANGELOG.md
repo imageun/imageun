@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Removed the `imageops` module in favor of the
+- Removed the `imageops` stuff in favor of the
   [`imageproc`](https://github.com/image-rs/imageproc) project
 
 ### Added
