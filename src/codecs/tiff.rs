@@ -12,12 +12,7 @@ use std::io::{self, BufRead, Cursor, Read, Seek, Write};
 use std::marker::PhantomData;
 use std::mem;
 
-use crate::color::{ColorType, ExtendedColorType};
-use crate::error::{
-    DecodingError, EncodingError, ImageError, ImageResult, LimitError, LimitErrorKind,
-    ParameterError, ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{ImageDecoder, ImageEncoder, ImageFormat};
+use crate::prelude::*;
 
 /// Decoder for TIFF images.
 pub struct TiffDecoder<R>

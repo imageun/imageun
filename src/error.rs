@@ -16,8 +16,7 @@
 use std::error::Error;
 use std::{fmt, io};
 
-use crate::color::ExtendedColorType;
-use crate::image::ImageFormat;
+    use crate::prelude::*;
 
 /// The generic error type for image operations.
 ///

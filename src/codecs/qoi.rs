@@ -1,9 +1,6 @@
 //! Decoding and encoding of QOI images
 
-use crate::error::{DecodingError, EncodingError};
-use crate::{
-    ColorType, ExtendedColorType, ImageDecoder, ImageEncoder, ImageError, ImageFormat, ImageResult,
-};
+    use crate::prelude::*;
 use std::io::{Read, Write};
 
 /// QOI decoder

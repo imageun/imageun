@@ -7,12 +7,8 @@ use std::str::{self, FromStr};
 
 use super::{ArbitraryHeader, ArbitraryTuplType, BitmapHeader, GraymapHeader, PixmapHeader};
 use super::{HeaderRecord, PnmHeader, PnmSubtype, SampleEncoding};
-use crate::color::{ColorType, ExtendedColorType};
-use crate::error::{
-    DecodingError, ImageError, ImageResult, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{ImageDecoder, ImageFormat};
-use crate::utils;
+
+use crate::prelude::*;
 
 use byteorder_lite::{BigEndian, ByteOrder, NativeEndian};
 

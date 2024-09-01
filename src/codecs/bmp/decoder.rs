@@ -6,12 +6,7 @@ use std::{error, fmt};
 
 use byteorder_lite::{LittleEndian, ReadBytesExt};
 
-use crate::color::ColorType;
-use crate::error::{
-    DecodingError, ImageError, ImageResult, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{self, ImageDecoder, ImageFormat};
-use crate::ImageDecoderRect;
+use crate::prelude::*;
 
 const BITMAPCOREHEADER_SIZE: u32 = 12;
 const BITMAPINFOHEADER_SIZE: u32 = 40;

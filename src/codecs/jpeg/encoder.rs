@@ -3,17 +3,10 @@
 use std::borrow::Cow;
 use std::io::{self, Write};
 
-use crate::error::{
-    ImageError, ImageResult, ParameterError, ParameterErrorKind, UnsupportedError,
-    UnsupportedErrorKind,
-};
-use crate::image::{ImageEncoder, ImageFormat};
-use crate::utils::clamp;
-use crate::{ExtendedColorType, GenericImageView, ImageBuffer, Luma, Pixel, Rgb};
+use crate::prelude::*;
 
 use super::entropy::build_huff_lut_const;
 use super::transform;
-use crate::traits::PixelWithColorType;
 
 // Markers
 // Baseline DCT
@@ -771,7 +764,6 @@ fn encode_coefficient(coefficient: i32) -> (u8, u16) {
 
 #[inline]
 fn rgb_to_ycbcr<P: Pixel>(pixel: P) -> (u8, u8, u8) {
-    use crate::traits::Primitive;
     use num_traits::cast::ToPrimitive;
 
     let [r, g, b] = pixel.to_rgb().0;
@@ -839,9 +831,7 @@ mod tests {
     #[cfg(feature = "benchmarks")]
     use test::Bencher;
 
-    use crate::error::ParameterErrorKind::DimensionMismatch;
-    use crate::image::ImageDecoder;
-    use crate::{ExtendedColorType, ImageEncoder, ImageError};
+    use crate::prelude::*;
 
     use super::super::JpegDecoder;
     use super::{

@@ -11,15 +11,7 @@ use std::io::{BufRead, Seek, Write};
 
 use png::{BlendOp, DisposeOp};
 
-use crate::animation::{Delay, Frame, Frames, Ratio};
-use crate::color::{Blend, ColorType, ExtendedColorType};
-use crate::error::{
-    DecodingError, EncodingError, ImageError, ImageResult, LimitError, LimitErrorKind,
-    ParameterError, ParameterErrorKind, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{AnimationDecoder, ImageDecoder, ImageEncoder, ImageFormat};
-use crate::Limits;
-use crate::{DynamicImage, GenericImage, ImageBuffer, Luma, LumaA, Rgb, Rgba, RgbaImage};
+    use crate::prelude::*;
 
 // http://www.w3.org/TR/PNG-Structure.html
 // The first eight bytes of a PNG file always contain the following (decimal) values:

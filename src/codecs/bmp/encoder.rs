@@ -1,11 +1,7 @@
 use byteorder_lite::{LittleEndian, WriteBytesExt};
 use std::io::{self, Write};
 
-use crate::error::{
-    EncodingError, ImageError, ImageFormatHint, ImageResult, ParameterError, ParameterErrorKind,
-};
-use crate::image::ImageEncoder;
-use crate::{ExtendedColorType, ImageFormat};
+use crate::prelude::*;
 
 const BITMAPFILEHEADER_SIZE: u32 = 14;
 const BITMAPINFOHEADER_SIZE: u32 = 40;
@@ -320,11 +316,7 @@ fn get_pixel_info(
 
 #[cfg(test)]
 mod tests {
-    use super::super::BmpDecoder;
-    use super::BmpEncoder;
-
-    use crate::image::ImageDecoder;
-    use crate::ExtendedColorType;
+    use crate::prelude::*;
     use std::io::Cursor;
 
     fn round_trip_image(image: &[u8], width: u32, height: u32, c: ExtendedColorType) -> Vec<u8> {

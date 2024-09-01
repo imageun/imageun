@@ -1,7 +1,4 @@
-use crate::codecs::hdr::{rgbe8, Rgbe8Pixel, SIGNATURE};
-use crate::color::Rgb;
-use crate::error::{EncodingError, ImageFormatHint, ImageResult};
-use crate::{ExtendedColorType, ImageEncoder, ImageError, ImageFormat};
+    use crate::prelude::*;
 use std::cmp::Ordering;
 use std::io::{Result, Write};
 
@@ -295,7 +292,8 @@ pub(crate) fn to_rgbe8(pix: Rgb<f32>) -> Rgbe8Pixel {
 
 #[test]
 fn to_rgbe8_test() {
-    use crate::codecs::hdr::rgbe8;
+    use crate::prelude::*;
+
     let test_cases = vec![rgbe8(0, 0, 0, 0), rgbe8(1, 1, 128, 128)];
     for &pix in &test_cases {
         assert_eq!(pix, to_rgbe8(pix.to_hdr()));

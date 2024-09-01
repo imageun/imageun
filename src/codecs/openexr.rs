@@ -22,10 +22,7 @@
 //!     - (chroma) subsampling not supported yet by the exr library
 use exr::prelude::*;
 
-use crate::error::{DecodingError, EncodingError, ImageFormatHint};
-use crate::{
-    ColorType, ExtendedColorType, ImageDecoder, ImageEncoder, ImageError, ImageFormat, ImageResult,
-};
+    use crate::prelude::*;
 
 use std::io::{BufRead, Seek, Write};
 
@@ -338,9 +335,7 @@ mod test {
     use std::io::{BufReader, Cursor};
     use std::path::{Path, PathBuf};
 
-    use crate::buffer_::{Rgb32FImage, Rgba32FImage};
-    use crate::error::{LimitError, LimitErrorKind};
-    use crate::{DynamicImage, ImageBuffer, Rgb, Rgba};
+    use crate::prelude::*;
 
     const BASE_PATH: &[&str] = &[".", "tests", "images", "exr"];
 
@@ -416,7 +411,7 @@ mod test {
 
         #[cfg(feature = "hdr")]
         {
-            use crate::codecs::hdr::HdrDecoder;
+    use crate::prelude::*;
 
             let folder = BASE_PATH.iter().collect::<PathBuf>();
             let reference_path = folder.clone().join("overexposed gradient.hdr");

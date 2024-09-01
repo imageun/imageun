@@ -10,13 +10,8 @@ use std::{error, fmt};
 
 use byteorder_lite::{LittleEndian, ReadBytesExt};
 
-#[allow(deprecated)]
-use crate::codecs::dxt::{DxtDecoder, DxtVariant};
-use crate::color::ColorType;
-use crate::error::{
-    DecodingError, ImageError, ImageFormatHint, ImageResult, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{ImageDecoder, ImageFormat};
+
+    use crate::prelude::*;
 
 /// Errors that can occur during decoding and parsing a DDS image
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]

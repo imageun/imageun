@@ -22,5 +22,4 @@ mod image;
 mod image_reader;
 mod prelude;
 mod rect;
-mod traits;
 mod utils;

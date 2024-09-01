@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::time::Duration;
 
-use crate::error::ImageResult;
+    use crate::prelude::*;
 
 /// An implementation dependent iterator, reading the frames as requested
 pub struct Frames<'a> {

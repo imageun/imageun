@@ -2,10 +2,7 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader, Cursor, Read, Seek, SeekFrom};
 use std::path::Path;
 
-use crate::dynimage::DynamicImage;
-use crate::error::{ImageFormatHint, UnsupportedError, UnsupportedErrorKind};
-use crate::image::ImageFormat;
-use crate::{ImageDecoder, ImageError, ImageResult};
+use crate::prelude::*;
 
 use super::free_functions;
 
@@ -141,9 +138,6 @@ impl<'a, R: 'a + BufRead + Seek> ImageReader<R> {
         reader: R,
         limits_for_png: super::Limits,
     ) -> ImageResult<Box<dyn ImageDecoder + 'a>> {
-        #[allow(unused)]
-        use crate::codecs::*;
-
         #[allow(unreachable_patterns)]
         // Default is unreachable if all features are supported.
         Ok(match format {

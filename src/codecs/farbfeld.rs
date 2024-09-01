@@ -18,12 +18,7 @@
 
 use std::io::{self, Read, Seek, SeekFrom, Write};
 
-use crate::color::ExtendedColorType;
-use crate::error::{
-    DecodingError, ImageError, ImageResult, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{self, ImageDecoder, ImageDecoderRect, ImageEncoder, ImageFormat};
-use crate::ColorType;
+    use crate::prelude::*;
 
 /// farbfeld Reader
 pub struct FarbfeldReader<R: Read> {
@@ -313,8 +308,7 @@ impl<W: Write> ImageEncoder for FarbfeldEncoder<W> {
 
 #[cfg(test)]
 mod tests {
-    use crate::codecs::farbfeld::FarbfeldDecoder;
-    use crate::ImageDecoderRect;
+    use crate::prelude::*;
     use byteorder_lite::{ByteOrder, NativeEndian};
     use std::io::{Cursor, Seek, SeekFrom};
 

@@ -1,11 +1,6 @@
 use super::header::{Header, ImageType, ALPHA_BIT_MASK, SCREEN_ORIGIN_BIT_MASK};
-use crate::{
-    color::{ColorType, ExtendedColorType},
-    error::{
-        ImageError, ImageResult, LimitError, LimitErrorKind, UnsupportedError, UnsupportedErrorKind,
-    },
-    image::{ImageDecoder, ImageFormat},
-};
+use crate::prelude::*;
+
 use byteorder_lite::ReadBytesExt;
 use std::io::{self, Read};
 

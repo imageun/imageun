@@ -1,6 +1,6 @@
 //! Input and output of images.
 
-use crate::{error, ColorType, ImageError, ImageResult};
+use crate::prelude::*;
 
 pub(crate) mod free_functions;
 mod image_reader_type;

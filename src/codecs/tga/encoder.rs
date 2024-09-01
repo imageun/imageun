@@ -1,9 +1,7 @@
 use super::header::Header;
-use crate::{
-    codecs::tga::header::ImageType, error::EncodingError, ExtendedColorType, ImageEncoder,
-    ImageError, ImageFormat, ImageResult,
-};
 use std::{error, fmt, io::Write};
+
+    use crate::prelude::*;
 
 /// Errors that can occur during encoding and saving of a TGA image.
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -249,8 +247,8 @@ impl<W: Write> ImageEncoder for TgaEncoder<W> {
 #[cfg(test)]
 mod tests {
     use super::{EncoderError, TgaEncoder};
-    use crate::{codecs::tga::TgaDecoder, ExtendedColorType, ImageDecoder, ImageError};
     use std::{error::Error, io::Cursor};
+    use crate::prelude::*;
 
     #[test]
     fn test_image_width_too_large() {

@@ -5,16 +5,7 @@ use std::mem::size_of;
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
-use crate::color::{ColorType, ExtendedColorType};
-use crate::error::{
-    ImageError, ImageFormatHint, ImageResult, LimitError, LimitErrorKind, ParameterError,
-    ParameterErrorKind,
-};
-use crate::math::Rect;
-use crate::traits::Pixel;
-use crate::ImageBuffer;
-
-use crate::animation::Frames;
+use crate::prelude::*;
 
 /// An enumeration of supported image formats.
 /// Not all formats support both encoding and decoding.
@@ -1175,7 +1166,6 @@ where
     /// let _: SubImage<&_> = GenericImageView::view(&*subimage, 0, 0, 10, 10);
     /// ```
     pub fn view(&self, x: u32, y: u32, width: u32, height: u32) -> SubImage<&I::Target> {
-        use crate::GenericImageView as _;
         assert!(u64::from(x) + u64::from(width) <= u64::from(self.inner.width()));
         assert!(u64::from(y) + u64::from(height) <= u64::from(self.inner.height()));
         let x = self.inner.xoffset.saturating_add(x);
@@ -1285,9 +1275,6 @@ mod tests {
         load_rect, ColorType, GenericImage, GenericImageView, ImageDecoder, ImageFormat,
         ImageResult,
     };
-    use crate::color::Rgba;
-    use crate::math::Rect;
-    use crate::{GrayImage, ImageBuffer};
 
     #[test]
     #[allow(deprecated)]

@@ -6,14 +6,7 @@ use std::ops::{Deref, DerefMut, Index, IndexMut, Range};
 use std::path::Path;
 use std::slice::{ChunksExact, ChunksExactMut};
 
-use crate::dynimage::{save_buffer, save_buffer_with_format, write_buffer_with_format};
-use crate::error::ImageResult;
-use crate::flat::{FlatSamples, SampleLayout};
-use crate::image::{GenericImage, GenericImageView, ImageEncoder, ImageFormat};
-use crate::Rect;
-use crate::traits::{EncodableLayout, Pixel, PixelWithColorType};
-use crate::utils::expand_packed;
-use crate::DynamicImage;
+    use crate::prelude::*;
 
 /// Iterate over pixel refs.
 pub struct Pixels<'a, P: Pixel + 'a>
@@ -1587,11 +1580,7 @@ impl From<DynamicImage> for Rgba32FImage {
 
 #[cfg(test)]
 mod test {
-    use super::{GrayImage, ImageBuffer, RgbImage};
-    use crate::math::Rect;
-    use crate::GenericImage as _;
-    use crate::ImageFormat;
-    use crate::{Luma, LumaA, Pixel, Rgb, Rgba};
+    use crate::prelude::*;
     use num_traits::Zero;
 
     #[test]

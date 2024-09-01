@@ -2,14 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufWriter, Seek};
 use std::path::Path;
 
-use crate::{codecs::*, ExtendedColorType, ImageReader};
-
-use crate::dynimage::DynamicImage;
-use crate::error::{ImageError, ImageFormatHint, ImageResult};
-use crate::error::{UnsupportedError, UnsupportedErrorKind};
-use crate::image::ImageFormat;
-#[allow(unused_imports)] // When no features are supported
-use crate::image::{ImageDecoder, ImageEncoder};
+use crate::prelude::*;
 
 /// Create a new image from a Reader.
 ///

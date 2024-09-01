@@ -1,24 +1,7 @@
 use std::io::{self, Seek, Write};
 use std::path::Path;
 
-#[cfg(feature = "gif")]
-use crate::codecs::gif;
-#[cfg(feature = "png")]
-use crate::codecs::png;
-
-use crate::buffer_::{
-    ConvertBuffer, Gray16Image, GrayAlpha16Image, GrayAlphaImage, GrayImage, ImageBuffer,
-    Rgb16Image, RgbImage, Rgba16Image, RgbaImage,
-};
-use crate::color::{self, IntoColor};
-use crate::error::{ImageError, ImageResult, ParameterError, ParameterErrorKind};
-use crate::flat::FlatSamples;
-use crate::image::{GenericImage, GenericImageView, ImageDecoder, ImageEncoder, ImageFormat};
-use crate::image_reader::free_functions;
-use crate::ExtendedColorType;
-use crate::ImageReader;
-use crate::{image, Luma, LumaA};
-use crate::{Rgb32FImage, Rgba32FImage};
+use crate::prelude::*;
 
 /// A Dynamic Image
 ///
@@ -1073,7 +1056,6 @@ mod bench {
 
 #[cfg(test)]
 mod test {
-    use crate::color::ColorType;
 
     #[test]
     fn test_empty_file() {
@@ -1097,7 +1079,6 @@ mod test {
     }
 
     fn test_grayscale(mut img: super::DynamicImage, alpha_discarded: bool) {
-        use crate::image::{GenericImage, GenericImageView};
         img.put_pixel(0, 0, crate::color::Rgba([255, 0, 0, 100]));
         let expected_alpha = if alpha_discarded { 255 } else { 100 };
         assert_eq!(

@@ -5,11 +5,8 @@ use std::{error, fmt};
 
 use rgb::Pixel;
 
-use crate::color::{ColorType, Rgb};
-use crate::error::{
-    DecodingError, ImageError, ImageFormatHint, ImageResult, UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{ImageDecoder, ImageFormat};
+
+    use crate::prelude::*;
 
 /// Errors that can occur during decoding and parsing of a HDR image
 #[derive(Debug, Clone, PartialEq, Eq)]

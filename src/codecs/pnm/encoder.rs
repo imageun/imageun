@@ -7,12 +7,7 @@ use std::io::Write;
 use super::AutoBreak;
 use super::{ArbitraryHeader, ArbitraryTuplType, BitmapHeader, GraymapHeader, PixmapHeader};
 use super::{HeaderRecord, PnmHeader, PnmSubtype, SampleEncoding};
-use crate::color::ExtendedColorType;
-use crate::error::{
-    ImageError, ImageResult, ParameterError, ParameterErrorKind, UnsupportedError,
-    UnsupportedErrorKind,
-};
-use crate::image::{ImageEncoder, ImageFormat};
+use crate::prelude::*;
 
 use byteorder_lite::{BigEndian, WriteBytesExt};
 

@@ -34,19 +34,7 @@ use std::mem;
 use gif::ColorOutput;
 use gif::{DisposalMethod, Frame};
 
-use crate::animation::{self, Ratio};
-use crate::color::{ColorType, Rgba};
-use crate::error::LimitError;
-use crate::error::LimitErrorKind;
-use crate::error::{
-    DecodingError, EncodingError, ImageError, ImageResult, ParameterError, ParameterErrorKind,
-    UnsupportedError, UnsupportedErrorKind,
-};
-use crate::image::{AnimationDecoder, ImageDecoder, ImageFormat};
-use crate::traits::Pixel;
-use crate::ExtendedColorType;
-use crate::ImageBuffer;
-use crate::Limits;
+    use crate::prelude::*;
 
 /// GIF decoder
 pub struct GifDecoder<R: Read> {

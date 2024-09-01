@@ -2,8 +2,8 @@
 
 use std::io::Write;
 
-use crate::error::{EncodingError, UnsupportedError, UnsupportedErrorKind};
-use crate::{ExtendedColorType, ImageEncoder, ImageError, ImageFormat, ImageResult};
+
+    use crate::prelude::*;
 
 /// WebP Encoder.
 ///
@@ -105,7 +105,7 @@ impl ImageError {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ImageEncoder, RgbaImage};
+    use crate::prelude::*;
 
     #[test]
     fn write_webp() {

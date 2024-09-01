@@ -4,8 +4,7 @@ use rayon::slice::{ChunksExact, ChunksExactMut, ParallelSlice, ParallelSliceMut}
 use std::fmt;
 use std::ops::{Deref, DerefMut};
 
-use crate::traits::Pixel;
-use crate::ImageBuffer;
+    use crate::prelude::*;
 
 /// Parallel iterator over pixel refs.
 #[derive(Clone)]
@@ -400,7 +399,6 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{Rgb, RgbImage};
     use rayon::iter::{IndexedParallelIterator, ParallelIterator};
 
     fn test_width_height(width: u32, height: u32, len: usize) {
@@ -458,8 +456,6 @@ mod test {
 #[cfg(test)]
 #[cfg(feature = "benchmarks")]
 mod benchmarks {
-    use crate::{Rgb, RgbImage};
-
     const S: u32 = 1024;
 
     #[bench]

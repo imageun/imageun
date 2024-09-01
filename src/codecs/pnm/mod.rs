@@ -19,9 +19,7 @@ mod header;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::image::ImageDecoder;
-    use crate::ExtendedColorType;
+    use crate::prelude::*;
     use byteorder_lite::{ByteOrder, NativeEndian};
 
     fn execute_roundtrip_default(buffer: &[u8], width: u32, height: u32, color: ExtendedColorType) {
