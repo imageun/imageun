@@ -81,9 +81,6 @@ pub mod buffer {
 // Math utils
 pub mod math;
 
-// Image processing functions
-pub mod imageops;
-
 // Buffer representations for ffi.
 pub mod flat;
 

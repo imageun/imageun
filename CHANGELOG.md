@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed the `imageops` module in favor of the
+  [`imageproc`](https://github.com/image-rs/imageproc) project
+
+### Added
+
+- Added `DoubleEndedIterator` impls for the `enumerate_*()` methods
+
 ### Changed
 
 - Updated some documentation to talk about the fork from image-rs
